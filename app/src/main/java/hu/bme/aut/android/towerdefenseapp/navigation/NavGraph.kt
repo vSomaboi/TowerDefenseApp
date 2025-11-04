@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import hu.bme.aut.android.towerdefenseapp.feature.authentication.login.LoginScreen
 import hu.bme.aut.android.towerdefenseapp.feature.authentication.register.RegisterScreen
+import hu.bme.aut.android.towerdefenseapp.feature.mainmenu.MainMenuScreen
 
 @Composable
 fun NavGraph(
@@ -20,14 +21,21 @@ fun NavGraph(
             LoginScreen(
                 onNavigateToRegister = {
                     navController.navigate(Screen.Register.route)
+                },
+                onNavigateToMainMenu = {
+                    navController.navigate(Screen.MainMenu.route)
                 }
             )
         }
         composable(Screen.Register.route){
-            RegisterScreen()
+            RegisterScreen(
+                onNavigateToMainMenu = {
+                    navController.navigate(Screen.MainMenu.route)
+                }
+            )
         }
         composable(Screen.MainMenu.route){
-            // MainMenuScreen()
+            MainMenuScreen()
         }
 
     }
