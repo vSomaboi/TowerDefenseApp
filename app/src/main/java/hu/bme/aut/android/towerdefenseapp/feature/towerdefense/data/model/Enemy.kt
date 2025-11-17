@@ -5,14 +5,14 @@ abstract class Enemy(
     var yCoordinate: Float = 0f,
     open var speed: Float = 1f,
     open var health: Int = 100,
-    open var enemyType: EnemyType = EnemyType.GROUND,
+    open var movementType: MovementType = MovementType.GROUND,
     open var resistanceType: ResistanceType = ResistanceType.NONE
 ) {
     abstract fun move()
     abstract fun takeDamage(damage: Int)
 }
 
-enum class EnemyType {
+enum class MovementType {
     GROUND,
     FLYING
 }
