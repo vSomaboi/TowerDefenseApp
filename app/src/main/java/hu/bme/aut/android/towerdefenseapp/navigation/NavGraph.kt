@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import hu.bme.aut.android.towerdefenseapp.feature.authentication.login.LoginScreen
 import hu.bme.aut.android.towerdefenseapp.feature.authentication.register.RegisterScreen
 import hu.bme.aut.android.towerdefenseapp.feature.mainmenu.MainMenuScreen
+import hu.bme.aut.android.towerdefenseapp.feature.towerdefense.presentation.GameScreen
 
 @Composable
 fun NavGraph(
@@ -35,8 +36,14 @@ fun NavGraph(
             )
         }
         composable(Screen.MainMenu.route){
-            MainMenuScreen()
+            MainMenuScreen(
+                onStartGame = {
+                    navController.navigate(Screen.Game.route)
+                }
+            )
         }
-
+        composable(Screen.Game.route){
+            GameScreen()
+        }
     }
 }

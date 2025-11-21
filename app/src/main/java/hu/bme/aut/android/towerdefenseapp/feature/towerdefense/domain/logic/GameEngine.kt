@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class GameEngine internal constructor(
-    private val map: GameMap,
+    val map: GameMap,
     private val waveManager: WaveManager,
     private val collisionManager: CollisionManager,
     private val towerManager: TowerManager
@@ -59,6 +59,12 @@ class GameEngine internal constructor(
 
         // Detect collisions and remove destroyed entities
         collisionManager.updateCollisions(deltaTime, enemies, projectiles)
+        // Update the game state
+        _state.value = _state.value.copy(
+            enemies = enemies.toList(),
+            towers = towers.toList(),
+            projectiles = projectiles.toList()
+        )
     }
 }
 

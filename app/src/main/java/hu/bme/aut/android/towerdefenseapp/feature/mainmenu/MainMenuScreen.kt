@@ -33,7 +33,8 @@ import hu.bme.aut.android.towerdefenseapp.ui.theme.mediumColor
 
 @Composable
 fun MainMenuScreen(
-    viewModel: MainMenuViewModel = hiltViewModel()
+    viewModel: MainMenuViewModel = hiltViewModel(),
+    onStartGame: () -> Unit = { }
 ) {
     val selectedDifficulty by viewModel.selectedDifficulty.collectAsState()
     val difficultyOptions = viewModel.difficultyOptions
@@ -92,7 +93,7 @@ fun MainMenuScreen(
             ) {
                 // Start Game Button
                 Button(
-                    onClick = { }, //TODO: Start Game Action
+                    onClick = { onStartGame() },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(60.dp)
