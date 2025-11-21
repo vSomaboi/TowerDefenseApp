@@ -37,13 +37,14 @@ fun NavGraph(
         }
         composable(Screen.MainMenu.route){
             MainMenuScreen(
-                onStartGame = {
-                    navController.navigate(Screen.Game.route)
+                onStartGame = { mapId ->
+                    navController.navigate(Screen.Game.createRoute(mapId))
                 }
             )
         }
-        composable(Screen.Game.route){
-            GameScreen()
+        composable(Screen.Game.route){ backStackEntry ->
+            val mapId = backStackEntry.arguments?.getString("mapId")?.toInt() ?: 1
+            GameScreen(mapId = mapId)
         }
     }
 }

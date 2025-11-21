@@ -9,12 +9,17 @@ data class GameMap(
     val backgroundImageRes: Int,
     val path: List<Waypoint>,
     val cavePosition: PointF,   // enemy entry point
-    val gatePosition: PointF,   // target the enemies attack
-    val towerSpots: List<PointF>,
+    val townPosition: PointF,   // target the enemies attack
+    val towerSpots: List<TowerSpot>,
     val waveConfig: WaveConfig
 )
 
 data class Waypoint(val x: Float, val y: Float)
+
+data class TowerSpot(
+    val position: PointF,
+    val radius: Float = 70f
+)
 
 data class WaveConfig(
     val waves: List<Wave>
