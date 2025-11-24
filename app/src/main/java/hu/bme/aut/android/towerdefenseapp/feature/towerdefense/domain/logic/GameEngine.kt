@@ -2,9 +2,11 @@ package hu.bme.aut.android.towerdefenseapp.feature.towerdefense.domain.logic
 
 import android.util.Log
 import hu.bme.aut.android.towerdefenseapp.feature.towerdefense.data.maps.GameMap
+import hu.bme.aut.android.towerdefenseapp.feature.towerdefense.data.maps.TowerSpot
 import hu.bme.aut.android.towerdefenseapp.feature.towerdefense.data.model.Enemy
 import hu.bme.aut.android.towerdefenseapp.feature.towerdefense.data.model.Projectile
 import hu.bme.aut.android.towerdefenseapp.feature.towerdefense.data.model.Tower
+import hu.bme.aut.android.towerdefenseapp.feature.towerdefense.data.model.towers.TowerUpgradeTable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -70,6 +72,14 @@ class GameEngine internal constructor(
 
     fun placeTower(tower: Tower){
         towers.add(tower)
+    }
+
+    fun upgradeTower(spot: TowerSpot){
+        val tower = towers.firstOrNull{ it.spotId == spot.id }
+        tower?.let {
+            it.level++
+            it.applyUpgradeStats(TowerUpgradeTable.archerUpgrades[it.level-1])
+        }
     }
 }
 

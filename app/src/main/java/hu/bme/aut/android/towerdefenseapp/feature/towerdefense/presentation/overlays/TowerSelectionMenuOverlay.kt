@@ -1,4 +1,4 @@
-package hu.bme.aut.android.towerdefenseapp.feature.towerdefense.presentation
+package hu.bme.aut.android.towerdefenseapp.feature.towerdefense.presentation.overlays
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -66,10 +66,10 @@ fun TowerSelectionMenuOverlay(
                 Image(
                     painter = painterResource(
                         when(index){
-                            1 -> R.drawable.arrow
+                            0 -> R.drawable.arrow
+                            1 -> R.drawable.wand
                             2 -> R.drawable.arrow
                             3 -> R.drawable.arrow
-                            4 -> R.drawable.arrow
                             else -> R.drawable.arrow
                         }
                     ),
@@ -81,10 +81,10 @@ fun TowerSelectionMenuOverlay(
                         .clickable {
                             onTowerSelected(
                                 when(index){
-                                    1 -> TowerType.ARCHER
+                                    0 -> TowerType.ARCHER
+                                    1 -> TowerType.MAGE
                                     2 -> TowerType.ARCHER
                                     3 -> TowerType.ARCHER
-                                    4 -> TowerType.ARCHER
                                     else -> TowerType.ARCHER
                                 }
                             )

@@ -8,13 +8,17 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.IntSize
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import hu.bme.aut.android.towerdefenseapp.feature.towerdefense.data.maps.TowerSpot
+import hu.bme.aut.android.towerdefenseapp.feature.towerdefense.data.model.Tower
+import hu.bme.aut.android.towerdefenseapp.feature.towerdefense.data.model.TowerType
+import hu.bme.aut.android.towerdefenseapp.feature.towerdefense.presentation.overlays.TowerSelectionMenuOverlay
+import hu.bme.aut.android.towerdefenseapp.feature.towerdefense.presentation.overlays.TowerUpgradeMenuOverlay
 
 @Composable
 fun GameScreen(
@@ -28,6 +32,8 @@ fun GameScreen(
 
     var showTowerMenu by remember { mutableStateOf(false) }
     var selectedSpot by remember { mutableStateOf<TowerSpot?>(null) }
+    var showUpgradeMenu by remember { mutableStateOf(false) }
+    var selectedTower by remember { mutableStateOf<Tower?>(null) }
 
     var scaleX by remember { mutableFloatStateOf(1f) }
     var scaleY by remember { mutableFloatStateOf(1f) }
@@ -39,6 +45,11 @@ fun GameScreen(
                 is GameUiEvent.ShowTowerSelectionMenu -> {
                     selectedSpot = event.spot
                     showTowerMenu = true
+                }
+                is GameUiEvent.ShowTowerUpgradeMenu -> {
+                    selectedSpot = event.spot
+                    selectedTower = event.tower
+                    showUpgradeMenu = true
                 }
                 else -> {}
             }
@@ -82,7 +93,27 @@ fun GameScreen(
                 }
             )
         }
+
+        if(showUpgradeMenu && selectedSpot != null && selectedTower != null){
+            TowerUpgradeMenuOverlay(
+                spot = selectedSpot!!,
+                tower = selectedTower!!,
+                scaleX = scaleX,
+                scaleY = scaleY,
+                onLevelUpgraded = {
+                    viewModel.onLevelUpgraded(selectedSpot!!)
+                    showUpgradeMenu = false
+                    selectedSpot = null
+                    selectedTower = null
+                },
+                onSpecSelected = {},
+                onDismiss = {
+                    showUpgradeMenu = false
+                    selectedSpot = null
+                    selectedTower = null
+                }
+            )
+        }
+
     }
-
-
 }

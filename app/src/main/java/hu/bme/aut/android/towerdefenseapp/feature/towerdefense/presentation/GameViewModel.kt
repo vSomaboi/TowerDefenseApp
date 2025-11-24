@@ -7,6 +7,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import hu.bme.aut.android.towerdefenseapp.feature.towerdefense.data.maps.GameMap
 import hu.bme.aut.android.towerdefenseapp.feature.towerdefense.data.maps.MapRepository
 import hu.bme.aut.android.towerdefenseapp.feature.towerdefense.data.maps.TowerSpot
+import hu.bme.aut.android.towerdefenseapp.feature.towerdefense.data.model.Tower
 import hu.bme.aut.android.towerdefenseapp.feature.towerdefense.data.model.TowerType
 import hu.bme.aut.android.towerdefenseapp.feature.towerdefense.domain.di.GameEngineFactory
 import hu.bme.aut.android.towerdefenseapp.feature.towerdefense.domain.di.TowerFactory
@@ -58,10 +59,10 @@ class GameViewModel @Inject constructor(
     }
 
     private fun onTowerSpotClicked(spot: TowerSpot){
-        val hasTower = engine?.state?.value?.towers?.any{ it.spotId == spot.id }
+        val tower = engine?.state?.value?.towers?.firstOrNull{ it.spotId == spot.id }
         viewModelScope.launch {
-            if(hasTower == true){
-                _uiEvents.emit(GameUiEvent.ShowTowerUpgradeMenu(spot))
+            if(tower != null){
+                _uiEvents.emit(GameUiEvent.ShowTowerUpgradeMenu(spot, tower))
             }else{
                 _uiEvents.emit(GameUiEvent.ShowTowerSelectionMenu(spot))
             }
@@ -72,9 +73,13 @@ class GameViewModel @Inject constructor(
         val tower = TowerFactory.create(towerType, spot)
         engine?.placeTower(tower)
     }
+
+    fun onLevelUpgraded(spot: TowerSpot){
+        engine?.upgradeTower(spot)
+    }
 }
 
 sealed class GameUiEvent {
     data class ShowTowerSelectionMenu(val spot: TowerSpot) : GameUiEvent()
-    data class ShowTowerUpgradeMenu(val spot: TowerSpot) : GameUiEvent()
+    data class ShowTowerUpgradeMenu(val spot: TowerSpot, val tower: Tower) : GameUiEvent()
 }

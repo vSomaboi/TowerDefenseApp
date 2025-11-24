@@ -39,7 +39,9 @@ fun GameMapRenderer(
     val caveBitmap = ImageBitmap.imageResource(id = R.drawable.cave)
     val townBitmap = ImageBitmap.imageResource(id = R.drawable.town)
     val towerBitmaps = TowerType.entries.associateWith { towerType ->
-        ImageBitmap.imageResource(towerType.modelResourceId)
+        towerType.modelResourceIds.map { resId ->
+            ImageBitmap.imageResource(id = resId)
+        }
     }
 
     val towerSpotScale = 1.5f
@@ -150,7 +152,7 @@ fun GameMapRenderer(
                 val screenX = tower.xCoordinate * scaleX
                 val screenY = (tower.yCoordinate - 50f) * scaleY // Offset the center of the tower upwards, so it stands on its base correctly
 
-                val towerBitmap = towerBitmaps[tower.type] ?: return@forEach
+                val towerBitmap = towerBitmaps[tower.type]?.get(tower.level-1) ?: return@forEach
 
                 val imageWidth = towerBitmap.width * scaleX * towerScale
                 val imageHeight = towerBitmap.height * scaleY * towerScale
