@@ -16,16 +16,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import hu.bme.aut.android.towerdefenseapp.R
 import hu.bme.aut.android.towerdefenseapp.feature.towerdefense.data.maps.TowerSpot
-import hu.bme.aut.android.towerdefenseapp.feature.towerdefense.data.model.ArcherTower
-import hu.bme.aut.android.towerdefenseapp.feature.towerdefense.data.model.Tower
+import hu.bme.aut.android.towerdefenseapp.feature.towerdefense.data.model.TowerType
 import kotlin.math.roundToInt
 
 @Composable
@@ -33,8 +30,7 @@ fun TowerSelectionMenuOverlay(
     spot: TowerSpot,
     scaleX: Float,
     scaleY: Float,
-    canvasSize: IntSize,
-    onTowerSelected: (Tower) -> Unit,
+    onTowerSelected: (TowerType) -> Unit,
     onDismiss: () -> Unit
 ) {
     val centerX = (spot.position.x * scaleX).toInt()
@@ -85,11 +81,11 @@ fun TowerSelectionMenuOverlay(
                         .clickable {
                             onTowerSelected(
                                 when(index){
-                                    1 -> ArcherTower()
-                                    2 -> ArcherTower()
-                                    3 -> ArcherTower()
-                                    4 -> ArcherTower()
-                                    else -> ArcherTower()
+                                    1 -> TowerType.ARCHER
+                                    2 -> TowerType.ARCHER
+                                    3 -> TowerType.ARCHER
+                                    4 -> TowerType.ARCHER
+                                    else -> TowerType.ARCHER
                                 }
                             )
                         }

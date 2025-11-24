@@ -7,6 +7,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -23,14 +24,13 @@ fun GameScreen(
     val activity = LocalContext.current as Activity
 
     val map = viewModel.map
-    val state = viewModel.gameState?.collectAsState()
+    val state by viewModel.gameState.collectAsState()
 
     var showTowerMenu by remember { mutableStateOf(false) }
     var selectedSpot by remember { mutableStateOf<TowerSpot?>(null) }
 
-    var scaleX by remember { mutableStateOf(1f) }
-    var scaleY by remember { mutableStateOf(1f) }
-    var canvasSize by remember { mutableStateOf(IntSize.Zero) }
+    var scaleX by remember { mutableFloatStateOf(1f) }
+    var scaleY by remember { mutableFloatStateOf(1f) }
 
     LaunchedEffect(Unit) {
         viewModel.loadMap(mapId)
@@ -56,15 +56,13 @@ fun GameScreen(
     if(map != null){
         GameMapRenderer(
             map,
+            state.towers,
             onMapTap = { offset ->
                 viewModel.onMapTap(offset)
             },
             onScaleComputed = { sx, sy ->
                 scaleX = sx
                 scaleY = sy
-            },
-            onCanvasSizeComputed = { size ->
-                canvasSize = size
             }
         )
 
@@ -73,7 +71,6 @@ fun GameScreen(
                 spot = selectedSpot!!,
                 scaleX = scaleX,
                 scaleY = scaleY,
-                canvasSize = canvasSize,
                 onTowerSelected = { type ->
                     viewModel.onTowerSelected(selectedSpot!!, type)
                     showTowerMenu = false

@@ -7,11 +7,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import hu.bme.aut.android.towerdefenseapp.feature.towerdefense.data.maps.GameMap
 import hu.bme.aut.android.towerdefenseapp.feature.towerdefense.data.maps.MapRepository
 import hu.bme.aut.android.towerdefenseapp.feature.towerdefense.data.maps.TowerSpot
-import hu.bme.aut.android.towerdefenseapp.feature.towerdefense.data.model.Tower
+import hu.bme.aut.android.towerdefenseapp.feature.towerdefense.data.model.TowerType
 import hu.bme.aut.android.towerdefenseapp.feature.towerdefense.domain.di.GameEngineFactory
+import hu.bme.aut.android.towerdefenseapp.feature.towerdefense.domain.di.TowerFactory
 import hu.bme.aut.android.towerdefenseapp.feature.towerdefense.domain.logic.GameEngine
 import hu.bme.aut.android.towerdefenseapp.feature.towerdefense.domain.logic.GameState
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
@@ -26,8 +28,8 @@ class GameViewModel @Inject constructor(
     private val _uiEvents = MutableSharedFlow<GameUiEvent>()
     val uiEvents = _uiEvents.asSharedFlow()
     private var engine: GameEngine? = null
-    val gameState: StateFlow<GameState>?
-        get() = engine?.state
+    private val _gameState = MutableStateFlow(GameState())
+    val gameState: StateFlow<GameState> get() = _gameState
 
     val map: GameMap?
         get() = engine?.map
@@ -35,6 +37,12 @@ class GameViewModel @Inject constructor(
     fun loadMap(mapId: Int) {
         val map = mapRepository.getMapById(mapId)
         engine = engineFactory.create(map)
+        engine!!.start()
+        viewModelScope.launch {
+            engine!!.state.collect { state ->
+                _gameState.value = state
+            }
+        }
     }
 
     fun onMapTap(mapTap: Offset) {
@@ -50,17 +58,23 @@ class GameViewModel @Inject constructor(
     }
 
     private fun onTowerSpotClicked(spot: TowerSpot){
+        val hasTower = engine?.state?.value?.towers?.any{ it.spotId == spot.id }
         viewModelScope.launch {
-            _uiEvents.emit(GameUiEvent.ShowTowerSelectionMenu(spot))
+            if(hasTower == true){
+                _uiEvents.emit(GameUiEvent.ShowTowerUpgradeMenu(spot))
+            }else{
+                _uiEvents.emit(GameUiEvent.ShowTowerSelectionMenu(spot))
+            }
         }
     }
 
-    fun onTowerSelected(spot: TowerSpot, towerType: Tower) {
-        //TODO
+    fun onTowerSelected(spot: TowerSpot, towerType: TowerType) {
+        val tower = TowerFactory.create(towerType, spot)
+        engine?.placeTower(tower)
     }
 }
 
 sealed class GameUiEvent {
     data class ShowTowerSelectionMenu(val spot: TowerSpot) : GameUiEvent()
-    data class TowerPlaced(val spot: TowerSpot, val tower: Tower) : GameUiEvent()
+    data class ShowTowerUpgradeMenu(val spot: TowerSpot) : GameUiEvent()
 }

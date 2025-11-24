@@ -22,13 +22,15 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import hu.bme.aut.android.towerdefenseapp.R
 import hu.bme.aut.android.towerdefenseapp.feature.towerdefense.data.maps.GameMap
+import hu.bme.aut.android.towerdefenseapp.feature.towerdefense.data.model.Tower
+import hu.bme.aut.android.towerdefenseapp.feature.towerdefense.data.model.TowerType
 
 @Composable
 fun GameMapRenderer(
     map: GameMap,
+    towers: List<Tower>,
     onMapTap: (Offset) -> Unit = {},
-    onScaleComputed: (scaleX: Float, scaleY: Float) -> Unit = { _, _ -> },
-    onCanvasSizeComputed: (IntSize) -> Unit = {}
+    onScaleComputed: (scaleX: Float, scaleY: Float) -> Unit = { _, _ -> }
 ) {
     var canvasSize by remember { mutableStateOf(IntSize.Zero) }
     // Load background image only once
@@ -36,17 +38,20 @@ fun GameMapRenderer(
     val towerBaseBitmap = ImageBitmap.imageResource(id = R.drawable.tower_base)
     val caveBitmap = ImageBitmap.imageResource(id = R.drawable.cave)
     val townBitmap = ImageBitmap.imageResource(id = R.drawable.town)
+    val towerBitmaps = TowerType.entries.associateWith { towerType ->
+        ImageBitmap.imageResource(towerType.modelResourceId)
+    }
 
     val towerSpotScale = 1.5f
     val caveScale = 3f
     val townScale = 2f
+    val towerScale = 2.5f
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .onSizeChanged { newSize ->
                 canvasSize = newSize
-                onCanvasSizeComputed(newSize)
             }
             .pointerInput(canvasSize) {
                 detectTapGestures { tapOffset ->
@@ -80,7 +85,9 @@ fun GameMapRenderer(
                 drawImage(bgBitmap)
             }
 
-            map.towerSpots.forEach { spot ->
+            map.towerSpots.filter{
+                spot -> towers.none { tower -> tower.spotId == spot.id } // Only draw the spots that don't have a tower
+            }.forEach { spot ->
                 val screenX = spot.position.x * scaleX
                 val screenY = spot.position.y * scaleY
 
@@ -129,6 +136,27 @@ fun GameMapRenderer(
 
                 drawImage(
                     image = townBitmap,
+                    dstOffset = IntOffset(
+                        (screenX - imageWidth / 2).toInt(),   // center the image
+                        (screenY - imageHeight / 2).toInt()
+                    ),
+                    dstSize = IntSize(
+                        imageWidth.toInt(),
+                        imageHeight.toInt()
+                    )
+                )
+            }
+            towers.forEach { tower ->
+                val screenX = tower.xCoordinate * scaleX
+                val screenY = (tower.yCoordinate - 50f) * scaleY // Offset the center of the tower upwards, so it stands on its base correctly
+
+                val towerBitmap = towerBitmaps[tower.type] ?: return@forEach
+
+                val imageWidth = towerBitmap.width * scaleX * towerScale
+                val imageHeight = towerBitmap.height * scaleY * towerScale
+
+                drawImage(
+                    image = towerBitmap,
                     dstOffset = IntOffset(
                         (screenX - imageWidth / 2).toInt(),   // center the image
                         (screenY - imageHeight / 2).toInt()

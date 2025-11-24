@@ -1,5 +1,6 @@
 package hu.bme.aut.android.towerdefenseapp.feature.towerdefense.domain.logic
 
+import android.util.Log
 import hu.bme.aut.android.towerdefenseapp.feature.towerdefense.data.maps.GameMap
 import hu.bme.aut.android.towerdefenseapp.feature.towerdefense.data.model.Enemy
 import hu.bme.aut.android.towerdefenseapp.feature.towerdefense.data.model.Projectile
@@ -13,7 +14,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 class GameEngine internal constructor(
     val map: GameMap,
@@ -27,12 +27,12 @@ class GameEngine internal constructor(
     private val enemies = mutableListOf<Enemy>()
     private val towers = mutableListOf<Tower>()
     private val projectiles = mutableListOf<Projectile>()
-
     private var gameLoopJob: Job? = null
     private var lastUpdateTime = 0L
 
     fun start() {
         if (gameLoopJob != null) return
+        _state.value = _state.value.copy(gameState = GameStates.RUNNING)
         gameLoopJob = CoroutineScope(Dispatchers.Default).launch {
             lastUpdateTime = System.currentTimeMillis()
             while (isActive && _state.value.gameState == GameStates.RUNNING) {
@@ -65,6 +65,11 @@ class GameEngine internal constructor(
             towers = towers.toList(),
             projectiles = projectiles.toList()
         )
+        Log.d("GameEngine", "Update: Towers=${towers.size}")
+    }
+
+    fun placeTower(tower: Tower){
+        towers.add(tower)
     }
 }
 

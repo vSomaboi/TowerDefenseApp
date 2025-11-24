@@ -12,12 +12,29 @@ object Map1 {
         cavePosition = PointF(1300f, 0f),
         townPosition = PointF(50f, 500f),
         towerSpots = listOf(
-            TowerSpot(PointF(300f, 525f)),
-            TowerSpot(PointF(700f, 480f)),
-            TowerSpot(PointF(1050f, 450f)),
-            TowerSpot(PointF(1500f, 400f)),
-            TowerSpot(PointF(500f, 850f)),
-            TowerSpot(PointF(1275f, 800f))
+            TowerSpot(
+                id = 0,
+                position = PointF(300f, 525f)
+            ),
+            TowerSpot(
+                id = 1,
+                position = PointF(700f, 480f)
+            ),
+            TowerSpot(
+                id = 2,
+                position = PointF(1050f, 450f)),
+            TowerSpot(
+                id = 3,
+                position = PointF(1500f, 400f)
+            ),
+            TowerSpot(
+                id = 4,
+                position = PointF(500f, 850f)
+            ),
+            TowerSpot(
+                id = 5,
+                position = PointF(1275f, 800f)
+            )
         ),
         waveConfig = WaveConfig(
             waves = emptyList()

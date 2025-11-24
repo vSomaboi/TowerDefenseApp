@@ -17,6 +17,7 @@ data class GameMap(
 data class Waypoint(val x: Float, val y: Float)
 
 data class TowerSpot(
+    val id: Int,
     val position: PointF,
     val radius: Float = 70f
 )
